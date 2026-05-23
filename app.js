@@ -477,9 +477,12 @@ async function startSpiral() {
     updateStepCounter(i + 1, thoughts.length);
 
     // Possibly trigger rogue notification at step 4 or 5
+    // Fire AFTER the typewriter finishes for that step, so it doesn't clash with screen shake
     if ((i === 3 || i === 4) && !state.rogueNotifFired && Math.random() > 0.25) {
       state.rogueNotifFired = true;
-      setTimeout(() => triggerRogueNotif(), 500);
+      // Delay after thought finishes rendering — screen shake fires at 400ms into step,
+      // so we wait 900ms after the pause starts to avoid visual collision
+      setTimeout(() => triggerRogueNotif(), 900);
     }
 
     await renderThought(thoughts[i], i + 1);
@@ -717,13 +720,13 @@ function touchGrass() {
   document.getElementById("grassBody").textContent = content.body;
   document.getElementById("grassVerdict").textContent = content.verdict;
 
-  // Rebuild tips
+  // Rebuild tips with staggered animation delays
   const tipsContainer = document.getElementById("grassTipsContainer");
   tipsContainer.innerHTML = "";
   content.tips.forEach((tip, i) => {
     const el = document.createElement("div");
     el.className = "grass-tip font-mono text-xs text-emerald-400/50 p-3 rounded-xl border border-emerald-500/15 bg-emerald-500/5";
-    el.style.animationDelay = `${0.3 + i * 0.18}s`;
+    el.style.animationDelay = `${0.25 + i * 0.15}s`;
     el.textContent = tip;
     tipsContainer.appendChild(el);
   });
@@ -734,26 +737,29 @@ function touchGrass() {
   document.body.appendChild(flash);
   flash.addEventListener("animationend", () => flash.remove(), { once: true });
 
-  // Show overlay after flash
+  // Show overlay after flash finishes (~250ms)
   setTimeout(() => {
     const overlay = document.getElementById("touchGrassOverlay");
+    overlay.scrollTop = 0;
     overlay.classList.remove("hidden");
     overlay.classList.add("visible");
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
-  }, 250);
+  }, 260);
 }
 
 function dismissGrass() {
   const overlay = document.getElementById("touchGrassOverlay");
   overlay.style.opacity = "0";
-  overlay.style.transition = "opacity 0.3s ease";
+  overlay.style.transition = "opacity 0.25s ease";
   setTimeout(() => {
-    overlay.classList.add("hidden");
     overlay.classList.remove("visible");
+    overlay.classList.add("hidden");
     overlay.style.opacity = "";
     overlay.style.transition = "";
+    document.documentElement.style.overflow = "";
     document.body.style.overflow = "";
-  }, 300);
+  }, 260);
 }
 
 // ─── RESET ───────────────────────────────────────────────────────────────────

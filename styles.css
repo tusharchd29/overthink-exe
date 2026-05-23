@@ -221,35 +221,49 @@ body {
 /* ─── TOUCH GRASS OVERLAY ─── */
 #touchGrassOverlay {
   display: none;
-  animation: grassFadeIn 0.4s ease forwards;
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  background: #030f07;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 #touchGrassOverlay.visible {
   display: flex !important;
+  animation: grassFadeIn 0.35s ease forwards;
+}
+#touchGrassOverlay > div {
+  width: 100%;
+  max-width: 420px;
+  margin: auto;
+  padding: 48px 28px 64px;
 }
 
 @keyframes grassFadeIn {
-  from { opacity: 0; transform: scale(1.02); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .grass-pulse {
-  animation: grassFloat 2s ease-in-out infinite;
+  display: inline-block;
+  animation: grassFloat 2.5s ease-in-out infinite;
 }
 @keyframes grassFloat {
   0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-10px) scale(1.05); }
+  50% { transform: translateY(-8px) scale(1.06); }
 }
 
 .grass-tip {
   opacity: 0;
-  transform: translateX(-10px);
-  animation: grassTipReveal 0.4s ease forwards;
+  transform: translateY(8px);
+  animation: grassTipReveal 0.35s ease forwards;
 }
-.grass-tip:nth-child(1) { animation-delay: 0.3s; }
-.grass-tip:nth-child(2) { animation-delay: 0.5s; }
-.grass-tip:nth-child(3) { animation-delay: 0.7s; }
 @keyframes grassTipReveal {
-  to { opacity: 1; transform: translateX(0); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ─── ROGUE NOTIFICATION ─── */
