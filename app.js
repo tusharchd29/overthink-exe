@@ -239,14 +239,34 @@ const survivalBadges = [
 
 // ─── ROGUE NOTIFICATIONS ─────────────────────────────────────────────────────
 const rogueNotifications = [
-  "CRITICAL ALERT: Mom's footsteps detected in the hallway. Act normal. Close all tabs. Look busy.",
-  "SYSTEM WARNING: Bestie is typing a paragraph in a completely different app. This cannot be good.",
-  "BREAKING: Someone just checked your profile without messaging. Reason: unknown. Threat level: orange.",
-  "ALERT: Person you haven't texted in 6 months just watched your story. They want something. Or worse, nothing.",
-  "WARNING: Your read receipt is visible. They know you've seen it. The performance of not-replying has begun.",
-  "CRITICAL: Group chat is at 3 unread messages. Stopped responding mid-conversation. This is intentional.",
-  "SYSTEM NOTICE: Someone is describing your situation to their own friend right now. You are a cautionary tale.",
-  "ALERT: The typing bubble appeared and disappeared twice. They are writing a draft. The draft is about you.",
+  // Social media chaos
+  "BREAKING: They just posted a BeReal 0.3 seconds after yours. Coincidence? Absolutely not.",
+  "ALERT: Your most recent post has 1 fewer like than your last one. The algorithm is trying to tell you something personal.",
+  "SYSTEM NOTICE: Someone screenshot your profile at 2:14am. No context. No message. Just vibes and intentions.",
+  "WARNING: They just posted 'needed this 🤍' with no location tag and no context. This is about something. Or someone.",
+  "BREAKING: Your 'close friends' list hasn't been opened by someone who is definitely on it. Interesting.",
+  "CRITICAL: They added a new song to their playlist. It is either about you or absolutely not about you. Both options are concerning.",
+  // Text/messaging
+  "ALERT: Delivered. Not read. For 47 minutes. They have their phone. You know they have their phone.",
+  "SYSTEM: They replied to someone else's story but not yours. The timestamps are 4 minutes apart. Do with that what you will.",
+  "WARNING: They changed their Spotify status. The song is called 'idk what i want'. You are in the blast radius.",
+  "NOTICE: They left a voice note that was 0:03 seconds long. Three seconds. What could possibly be said in three seconds.",
+  "BREAKING: Read at 11:11. Did not make a wish. Did not reply. This is intentional manifesting of your downfall.",
+  "CRITICAL: They just posted a story and then immediately deleted it. You saw it. You were not supposed to see it.",
+  // IRL chaos
+  "ALERT: Eye contact was made and then immediately broken. That was a 0.4 second interaction. Analyse it.",
+  "SYSTEM: They laughed at someone else's joke right after not laughing at yours. Loudly. With full commitment.",
+  "WARNING: They said 'we should hang out soon' and then said nothing about when. 'Soon' has no legal definition.",
+  "NOTICE: They walked past without headphones in. They could have said something. They had all the tools. They chose silence.",
+  "BREAKING: Their status changed to 'online' for exactly 2 minutes then went offline. They checked. They made a decision.",
+  "CRITICAL: They used your name in the last text instead of the usual 'lol' or nothing. Full government name energy.",
+  // Unhinged wildcards
+  "ALERT: Mercury is in retrograde. This explains everything and also makes it worse simultaneously.",
+  "SYSTEM: Based on current trajectory, you will think about this specific interaction at random intervals for the next 3 years.",
+  "WARNING: You just walked into a room and forgot why. Your brain is officially running too many background processes.",
+  "BREAKING: You re-read the conversation for the 8th time. The words have not changed. Your interpretation has.",
+  "NOTICE: A pigeon just looked at you for slightly too long. We're logging this as related.",
+  "CRITICAL: You just checked their last seen. Then locked your phone. Then unlocked it to check again. We saw that.",
 ];
 
 // ─── CHAOS METER CONFIG ───────────────────────────────────────────────────────
@@ -616,8 +636,98 @@ function showDiagnosis() {
   setTimeout(() => card.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
 }
 
+// ─── TOUCH GRASS CONTENT DATABASE ────────────────────────────────────────────
+const touchGrassContent = [
+  {
+    emoji: "🌿",
+    title: "hey. breathe.",
+    body: "bro. drink a glass of water. put the phone face down. go outside and physically touch a blade of grass. it is genuinely never that deep.",
+    tips: [
+      "💧 hydrate. like, actually. not a sip. a whole glass.",
+      "📵 phone face down. 5 minutes. i promise the notifs will still be there.",
+      "🌱 grass. touch it. be a little feral about it. embrace the outdoor lore.",
+    ],
+    verdict: "the probability this situation resolves itself without your intervention: 94%. the probability you will check their profile again in 8 minutes: also 94%.",
+  },
+  {
+    emoji: "🧘",
+    title: "log off. literally.",
+    body: "you have been inside your own head for approx. 6 spiral steps. that is 6 more than medically advisable. close the app. go be a person.",
+    tips: [
+      "🪟 look out a window. there is a whole situation happening out there called 'outside'.",
+      "🎧 put on a song that has nothing to do with this situation. one (1) banger. go.",
+      "🥤 snack. you cannot spiral on a full stomach. this is science. probably.",
+    ],
+    verdict: "certified overthinking hours logged: too many. certified grass touched today: zero. the data is damning.",
+  },
+  {
+    emoji: "☁️",
+    title: "it's not that deep.",
+    body: "in 72 hours you will not remember why this felt world-ending. in 6 months it will be a bit you tell at parties. decompress.",
+    tips: [
+      "🛏️ lie horizontal for exactly 3 minutes. no phone. just ceiling. classic.",
+      "🌬️ breathe out slowly. longer than you breathe in. your nervous system is begging.",
+      "🐕 if there is a dog nearby, go find the dog. the dog will fix this. dogs always fix it.",
+    ],
+    verdict: "this spiral was a 9.4/10 commitment to a narrative that has not been fact-checked. impressive. counterproductive. go touch something real.",
+  },
+  {
+    emoji: "🌊",
+    title: "skill issue: existing.",
+    body: "your brain has been running fanfiction as operating system for the last few minutes. it's giving very main character. time to return to supporting cast energy for a bit.",
+    tips: [
+      "🚶 walk to another room. the change of scenery recalibrates the drama sensors.",
+      "💬 text someone something completely unrelated. reset the conversational palette.",
+      "🧊 cold water on your wrists. not because it's dramatic. because it works. annoyingly.",
+    ],
+    verdict: "analysis: you are fine. the situation is fine. your perception of the situation is running on a different server entirely.",
+  },
+  {
+    emoji: "🌙",
+    title: "okay. we're done here.",
+    body: "the spiral has concluded. the building has been evacuated. you are the last one still in there reviewing blueprints. come outside.",
+    tips: [
+      "📖 read literally one page of anything. a book. a cereal box. a terms and conditions. anything.",
+      "☕ make something warm to drink. the ritual matters more than the beverage.",
+      "🌿 the grass is still there. still touchable. still an option. just saying.",
+    ],
+    verdict: "exit the thought. the thought does not have an exit. you have to make one. this is it. you're making it. go.",
+  },
+  {
+    emoji: "🦋",
+    title: "slay. now stop.",
+    body: "you ran a full 6-step hypothetical doomsday scenario in your head and survived it. that's actually kind of impressive. now put the phone down.",
+    tips: [
+      "🎨 draw something stupid for 2 minutes. it doesn't have to be good. just make your hands do something.",
+      "🌳 look at a tree. not metaphorically. find a literal tree and look at it. trees are healing.",
+      "😌 say 'i am so normal about this' out loud with full confidence. fake it till it's true.",
+    ],
+    verdict: "you are 100% that person. unfortunately that person needs a break. go be perceived by some fresh air.",
+  },
+];
+
 // ─── TOUCH GRASS PROTOCOL ────────────────────────────────────────────────────
 function touchGrass() {
+  // Pick random content
+  const content = touchGrassContent[Math.floor(Math.random() * touchGrassContent.length)];
+
+  // Populate dynamic fields
+  document.getElementById("grassEmoji").textContent = content.emoji;
+  document.getElementById("grassTitle").textContent = content.title;
+  document.getElementById("grassBody").textContent = content.body;
+  document.getElementById("grassVerdict").textContent = content.verdict;
+
+  // Rebuild tips
+  const tipsContainer = document.getElementById("grassTipsContainer");
+  tipsContainer.innerHTML = "";
+  content.tips.forEach((tip, i) => {
+    const el = document.createElement("div");
+    el.className = "grass-tip font-mono text-xs text-emerald-400/50 p-3 rounded-xl border border-emerald-500/15 bg-emerald-500/5";
+    el.style.animationDelay = `${0.3 + i * 0.18}s`;
+    el.textContent = tip;
+    tipsContainer.appendChild(el);
+  });
+
   // Flash
   const flash = document.createElement("div");
   flash.className = "flash-overlay";
@@ -630,14 +740,6 @@ function touchGrass() {
     overlay.classList.remove("hidden");
     overlay.classList.add("visible");
     document.body.style.overflow = "hidden";
-
-    // Reset grass tip animations
-    document.querySelectorAll(".grass-tip").forEach(el => {
-      el.style.animation = "none";
-      requestAnimationFrame(() => {
-        el.style.animation = "";
-      });
-    });
   }, 250);
 }
 
