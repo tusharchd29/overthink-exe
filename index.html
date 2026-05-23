@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Overthink.exe — Spiral Simulator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neon: { pink: '#ff007f', purple: '#a855f7', cyan: '#06b6d4' }
+          },
+          fontFamily: {
+            display: ['Syne', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            code: ['Space Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#030712] min-h-screen text-white overflow-x-hidden font-mono">
+
+  <!-- Particle canvas background -->
+  <canvas id="particleCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+  <!-- Noise overlay -->
+  <div class="noise-overlay fixed inset-0 pointer-events-none z-[1]"></div>
+
+  <!-- Rogue Notification Popup -->
+  <div id="rogueNotif" class="fixed top-4 left-1/2 -translate-x-1/2 z-[999] hidden w-[90vw] max-w-sm">
+    <div class="rogue-notif-inner glass-card border border-red-500/40 bg-red-950/60 rounded-2xl px-4 py-3 flex items-start gap-3 shadow-[0_0_25px_rgba(239,68,68,0.4)]">
+      <span class="text-red-400 text-lg mt-0.5 animate-pulse">⚠️</span>
+      <div>
+        <p class="text-red-300 font-display font-bold text-xs uppercase tracking-widest mb-0.5">SYSTEM ALERT</p>
+        <p id="rogueNotifText" class="text-red-100 text-sm font-mono leading-snug"></p>
+      </div>
+      <button onclick="dismissNotif()" class="ml-auto text-red-400 hover:text-red-200 transition-colors text-xs mt-0.5">✕</button>
+    </div>
+  </div>
+
+  <!-- Main App Wrapper -->
+  <main class="relative z-10 flex flex-col items-center justify-start min-h-screen px-4 py-8 pb-24">
+    <div class="w-full max-w-md mx-auto flex flex-col gap-5">
+
+      <!-- Header -->
+      <header class="text-center pt-4">
+        <div class="inline-flex items-center gap-2 mb-3">
+          <span class="status-dot bg-green-400 w-2 h-2 rounded-full animate-pulse"></span>
+          <span class="text-green-400/70 font-mono text-[10px] uppercase tracking-[0.2em]">v2.7.1 — running</span>
+        </div>
+        <h1 id="mainTitle" class="font-display font-black text-5xl leading-none tracking-tight mb-2">
+          <span class="text-white">Overthink</span><span class="text-pink-500">.exe</span>
+        </h1>
+        <p class="text-white/40 font-mono text-xs leading-relaxed">
+          certified brain rot engine • free to use • no refunds
+        </p>
+        <div class="flex items-center justify-center gap-3 mt-3">
+          <span class="pill-tag bg-purple-500/15 text-purple-400 border border-purple-500/20">★ delulu-certified</span>
+          <span class="pill-tag bg-pink-500/15 text-pink-400 border border-pink-500/20">✦ spiral tech™</span>
+          <span class="pill-tag bg-cyan-500/15 text-cyan-400 border border-cyan-500/20">⚡ free</span>
+        </div>
+      </header>
+
+      <!-- Chaos Meter -->
+      <div id="chaosMeter" class="glass-card rounded-2xl p-4 border border-white/[0.06] opacity-0 transition-all duration-500">
+        <div class="flex items-center justify-between mb-2">
+          <span class="font-display font-bold text-xs uppercase tracking-widest text-white/50">Chaos Meter™</span>
+          <span id="chaosLabel" class="font-display font-bold text-xs uppercase tracking-wider text-cyan-400">Chilling (Fake News) 🫡</span>
+        </div>
+        <div class="relative h-3 bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
+          <div id="chaosBar" class="chaos-bar h-full rounded-full transition-all duration-700 ease-out w-0 bg-cyan-400"
+               style="box-shadow: 0 0 12px currentColor;"></div>
+        </div>
+        <div class="flex justify-between mt-1.5">
+          <span class="font-mono text-[10px] text-white/20">chill</span>
+          <span id="chaosPercent" class="font-mono text-[10px] text-white/40">0%</span>
+          <span class="font-mono text-[10px] text-white/20">cooked</span>
+        </div>
+      </div>
+
+      <!-- Input Panel -->
+      <div id="inputPanel" class="glass-card rounded-2xl p-5 border border-white/[0.07] shadow-[0_0_40px_rgba(168,85,247,0.08)]">
+        <label class="block font-display font-bold text-xs uppercase tracking-widest text-white/40 mb-3">
+          what happened? (be specific, we will make it worse)
+        </label>
+        <div class="relative">
+          <textarea
+            id="situationInput"
+            rows="3"
+            maxlength="280"
+            placeholder="e.g. they used a period at the end of 'ok.'"
+            class="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3 text-white placeholder-white/20 font-mono text-sm resize-none focus:outline-none focus:border-purple-500/50 focus:shadow-[0_0_20px_rgba(168,85,247,0.15)] transition-all duration-300 leading-relaxed"
+          ></textarea>
+          <span id="charCount" class="absolute bottom-2 right-3 text-[10px] font-mono text-white/20">0/280</span>
+        </div>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-3 my-4">
+          <div class="flex-1 h-px bg-white/[0.06]"></div>
+          <span class="text-white/20 font-mono text-[10px] uppercase tracking-widest">or fast-track panic</span>
+          <div class="flex-1 h-px bg-white/[0.06]"></div>
+        </div>
+
+        <!-- Fast-Track Panic Buttons -->
+        <div class="grid grid-cols-3 gap-2 mb-4" id="categoryButtons">
+          <button class="panic-btn" data-category="relationship" onclick="selectCategory('relationship')">
+            <span class="panic-icon">💔</span>
+            <span class="panic-label">Situationship</span>
+          </button>
+          <button class="panic-btn" data-category="school" onclick="selectCategory('school')">
+            <span class="panic-icon">📚</span>
+            <span class="panic-label">School Cooked</span>
+          </button>
+          <button class="panic-btn" data-category="social" onclick="selectCategory('social')">
+            <span class="panic-icon">📱</span>
+            <span class="panic-label">Social Media</span>
+          </button>
+          <button class="panic-btn" data-category="bestie" onclick="selectCategory('bestie')">
+            <span class="panic-icon">🗡️</span>
+            <span class="panic-label">Bestie Drama</span>
+          </button>
+          <button class="panic-btn" data-category="existential" onclick="selectCategory('existential')">
+            <span class="panic-icon">🌌</span>
+            <span class="panic-label">Existential</span>
+          </button>
+          <button class="panic-btn" data-category="groupchat" onclick="selectCategory('groupchat')">
+            <span class="panic-icon">🔥</span>
+            <span class="panic-label">Group Chat</span>
+          </button>
+        </div>
+
+        <!-- Selected scenario preview -->
+        <div id="scenarioPreview" class="hidden mb-4 p-3 rounded-xl bg-purple-500/10 border border-purple-500/20">
+          <p class="text-[10px] font-mono text-purple-400/70 uppercase tracking-widest mb-1">selected scenario</p>
+          <p id="scenarioPreviewText" class="text-sm text-white/80 font-mono leading-snug"></p>
+        </div>
+
+        <!-- Simulate Button -->
+        <button id="simulateBtn" onclick="startSpiral()"
+          class="w-full simulate-btn font-display font-black text-base uppercase tracking-widest py-4 rounded-xl transition-all duration-200 active:scale-95 relative overflow-hidden">
+          <span id="simulateBtnText" class="relative z-10">⚡ Simulate Spiral</span>
+          <div class="simulate-btn-bg absolute inset-0"></div>
+        </button>
+      </div>
+
+      <!-- Spiral Output Panel -->
+      <div id="spiralPanel" class="hidden glass-card rounded-2xl border border-white/[0.07] overflow-hidden">
+        <div class="p-4 border-b border-white/[0.06] flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
+            <span class="font-display font-bold text-xs uppercase tracking-widest text-white/50">Live Spiral Feed</span>
+          </div>
+          <span id="stepCounter" class="font-mono text-[10px] text-white/30">step 0 / 6</span>
+        </div>
+        <div id="spiralThoughts" class="p-4 space-y-3 min-h-[120px]">
+          <!-- Thoughts will be rendered here -->
+        </div>
+      </div>
+
+      <!-- Diagnosis Card (end-game) -->
+      <div id="diagnosisCard" class="hidden glass-card rounded-2xl border border-purple-500/30 shadow-[0_0_50px_rgba(168,85,247,0.2)] overflow-hidden">
+        <div class="diagnosis-header p-5 text-center border-b border-white/[0.06]">
+          <p class="font-mono text-[10px] text-white/30 uppercase tracking-widest mb-2">✦ certified diagnosis ✦</p>
+          <h2 id="diagnosisTitle" class="font-display font-black text-2xl leading-tight mb-1 text-white"></h2>
+          <p id="diagnosisSubtitle" class="font-mono text-xs text-white/40"></p>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <!-- AI Verdict -->
+          <div class="rounded-xl p-4 bg-[#0a0a1a] border border-cyan-500/20 relative overflow-hidden">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+              <span class="font-mono text-[10px] text-cyan-400/70 uppercase tracking-widest">AI Analysis Module v0.0 (rogue)</span>
+            </div>
+            <p id="aiVerdict" class="font-mono text-xs text-white/70 leading-relaxed"></p>
+            <div class="absolute top-2 right-3 font-mono text-[8px] text-white/10">SYS_ERR_404</div>
+          </div>
+
+          <!-- Stats Row -->
+          <div class="grid grid-cols-3 gap-2">
+            <div class="stat-card rounded-xl p-3 text-center bg-white/[0.02] border border-white/[0.05]">
+              <div id="stat1Val" class="font-display font-black text-xl text-pink-400"></div>
+              <div class="font-mono text-[9px] text-white/30 uppercase tracking-wider mt-0.5">logic detected</div>
+            </div>
+            <div class="stat-card rounded-xl p-3 text-center bg-white/[0.02] border border-white/[0.05]">
+              <div id="stat2Val" class="font-display font-black text-xl text-purple-400"></div>
+              <div class="font-mono text-[9px] text-white/30 uppercase tracking-wider mt-0.5">pure delusion</div>
+            </div>
+            <div class="stat-card rounded-xl p-3 text-center bg-white/[0.02] border border-white/[0.05]">
+              <div id="stat3Val" class="font-display font-black text-xl text-cyan-400"></div>
+              <div class="font-mono text-[9px] text-white/30 uppercase tracking-wider mt-0.5">actually fine</div>
+            </div>
+          </div>
+
+          <!-- Survival Badge -->
+          <div id="survivalBadge" class="rounded-xl p-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-white/[0.06] flex items-center gap-3">
+            <span id="survivalEmoji" class="text-2xl"></span>
+            <div>
+              <p class="font-display font-bold text-xs text-white/80"></p>
+              <p id="survivalText" class="font-mono text-[10px] text-white/40 leading-snug"></p>
+            </div>
+          </div>
+
+          <!-- Touch Grass Button -->
+          <button id="touchGrassBtn" onclick="touchGrass()"
+            class="touch-grass-btn w-full py-4 rounded-xl font-display font-black text-sm uppercase tracking-widest transition-all duration-200 active:scale-95 relative overflow-hidden">
+            <span class="relative z-10">🌿 EMERGENCY: TOUCH GRASS PROTOCOL</span>
+          </button>
+
+          <!-- Reset -->
+          <button onclick="resetApp()"
+            class="w-full py-3 rounded-xl font-mono text-xs text-white/30 border border-white/[0.05] hover:border-white/[0.1] hover:text-white/50 transition-all duration-200 active:scale-95">
+            ↺ spiral again (you will not learn)
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Touch Grass Overlay -->
+  <div id="touchGrassOverlay" class="fixed inset-0 z-[998] hidden flex-col items-center justify-center bg-[#030f07] p-8 text-center">
+    <div class="max-w-sm mx-auto">
+      <div id="grassEmoji" class="text-7xl mb-6 grass-pulse">🌿</div>
+      <h2 class="font-display font-black text-3xl text-emerald-400 mb-4 leading-tight">hey. breathe.</h2>
+      <p class="font-mono text-sm text-emerald-200/60 leading-relaxed mb-8">
+        bro. drink a glass of water. put the phone face down. go outside and physically touch a blade of grass. it is genuinely never that deep.
+      </p>
+      <div class="space-y-3">
+        <div class="grass-tip font-mono text-xs text-emerald-400/50 p-3 rounded-xl border border-emerald-500/15 bg-emerald-500/5">
+          💧 hydrate. like, actually.
+        </div>
+        <div class="grass-tip font-mono text-xs text-emerald-400/50 p-3 rounded-xl border border-emerald-500/15 bg-emerald-500/5">
+          📵 phone face down. 5 minutes. you will survive.
+        </div>
+        <div class="grass-tip font-mono text-xs text-emerald-400/50 p-3 rounded-xl border border-emerald-500/15 bg-emerald-500/5">
+          🌱 grass. touch it. be a little feral about it.
+        </div>
+      </div>
+      <button onclick="dismissGrass()"
+        class="mt-8 px-8 py-3 rounded-xl font-display font-bold text-sm text-white/60 border border-white/10 hover:border-white/20 hover:text-white/80 transition-all duration-200 active:scale-95">
+        ok fine. i'm back.
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
